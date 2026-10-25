@@ -1,7 +1,9 @@
 # scnu_light_chasing_project
 
-深圳大学实训项目合集。
+华南师范大学追光空间站项目或复刻项目
 
-- **ASL-Recognition** — 基于深度相机的美式手语识别与翻译系统（FastAPI + WebSocket + MediaPipe + Keras）
+- **ASL-Recognition** — 基于深度相机(ORBBEC Gemini 336L)的美式手语识别与翻译系统
+- **motion-sensing-game**-基于深度相机（ORBBEC Gemini 336L）的体感游戏（切水果、搭积木）
 
-详见 [ASL-Recognition/README.md](ASL-Recognition/README.md)
+详见 [ASL-Recognition/README.md]
+详见 [motion-sensing-game/README.md]
