@@ -1,0 +1,17 @@
+# Hand Gesture Control Game - Dependencies
+
+# Core game engine
+pygame>=2.0.0
+
+# Computer vision
+opencv-python>=4.5.0
+numpy>=1.20.0
+
+# Hand tracking (optional but recommended)
+mediapipe>=0.8.0
+
+# Orbbec SDK (optional - for Orbbec camera support)
+# pyorbbecsdk>=2.0.0
+
+# For sound effects (optional)
+# pygame-menu>=4.0.0
