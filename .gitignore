@@ -14,21 +14,21 @@ env/
 ENV/
 
 # ── 运行时数据（隐私 / 用户数据，勿提交） ────────────
-backend/face_db/
-backend/user_videos/
-backend/calibration_videos/
-backend/user_features.json
-backend/label_stats.json
-backend/usage_stats*.json
-backend/word_calibration*.json
-backend/profiles.json
-backend/prototypes*.csv
-backend/prototypes_*.npz
+face_db/
+user_videos/
+calibration_videos/
+user_features.json
+label_stats.json
+usage_stats*.json
+word_calibration*.json
+profiles.json
+prototypes*.csv
+prototypes_*.npz
 
 # ── 日志 ─────────────────────────────────────────────
 *.log
 Log/
-backend/*.log
+*.log
 
 # ── IDE / 系统 ───────────────────────────────────────
 .idea/
@@ -48,3 +48,6 @@ Desktop.ini
 
 # demo videos too large for GitHub
 *.mp4
+
+push_to_github.bat
+*.bak
