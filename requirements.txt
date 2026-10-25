@@ -1,0 +1,22 @@
+# ── 核心依赖（运行本项目必需） ───────────────────────
+fastapi
+uvicorn
+websockets
+keras
+tensorflow
+opencv-python
+mediapipe
+openai
+pyspellchecker
+numpy
+deepface
+tf-keras
+scipy
+
+# ── 可选依赖 ─────────────────────────────────────────
+# Orbbec Femto 深度相机支持（ENABLE_ORBBEC=1 时使用，普通摄像头无需安装）：
+# pyorbbecsdk
+#
+# scripts/ 下的报告 / PPT 生成脚本需要：
+# python-pptx
+# python-docx

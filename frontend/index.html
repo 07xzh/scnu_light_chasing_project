@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASL Pro Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Apple Frost White Variables */
+  --bg-dark: #ffffff; /* used for modal backgrounds */
+  --bg-gradient: radial-gradient(circle at 0% 0%, #ffffff 0%, #f9fafb 60%, #f3f4f6 100%);
+  
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --glass-highlight: rgba(255, 255, 255, 0.9);
+  
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  
+  --accent: #007aff;
+  --accent-glow: rgba(0, 122, 255, 0.2);
+  --success: #10b981;
+  --success-glow: rgba(16, 185, 129, 0.2);
+  --danger: #ef4444;
+  --danger-glow: rgba(239, 68, 68, 0.2);
+  
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  --radius-xl: 24px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  /* Premium Frost White Mesh Gradient */
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(14, 165, 233, 0.08), transparent 35%),
+    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.06), transparent 35%),
+    radial-gradient(circle at 50% 100%, rgba(16, 185, 129, 0.05), transparent 40%);
+  background-attachment: fixed;
+  background-size: cover;
+  
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  display: flex;
+  overflow: hidden; /* App-like feel */
+}
+
+/* Glass Utility */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 1px var(--glass-highlight), 0 4px 24px rgba(0,0,0,0.03);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Inset Panels (for grouping) */
+.glass-panel {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.01);
+}
+
+/* Layout */
+.sidebar {
+  width: 300px;
+  height: 100%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 24px;
+  border-right: 1px solid var(--glass-border);
+  border-radius: 0;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.02);
+  z-index: 10;
+  overflow-y: auto;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px 24px;
+  gap: 20px;
+  overflow: hidden;
+}
+
+/* Sidebar Components */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.brand-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px var(--accent-glow);
+  color: #fff;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.glass-btn {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.glass-btn:hover { background: rgba(0, 0, 0, 0.05); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+.glass-btn:active { transform: scale(0.96); transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* Primary Button with Sweep Animation */
+.glass-btn.primary {
+  background: linear-gradient(135deg, #007aff 0%, #005bb5 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 16px var(--accent-glow);
+}
+.glass-btn.primary::after {
+  content: "";
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+  transform: skewX(-25deg);
+  transition: 0.5s;
+}
+.glass-btn.primary:hover::after {
+  left: 150%;
+  transition: 0.7s ease-in-out;
+}
+.glass-btn.primary:hover { box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4); }
+
+/* Range Slider */
+.range-group { display: flex; align-items: center; gap: 12px; }
+input[type=range] {
+  flex: 1;
+  -webkit-appearance: none;
+  background: transparent;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 16px; width: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  margin-top: -6px;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%; height: 4px;
+  background: linear-gradient(to right, var(--accent) var(--range-progress, 50%), rgba(0,0,0,0.1) var(--range-progress, 50%));
+  border-radius: 2px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Segmented Control (Top Nav) */
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.segmented-control {
+  display: flex;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  padding: 4px;
+  border: 1px solid rgba(0,0,0,0.03);
+}
+.segment-btn {
+  padding: 6px 20px;
+  border-radius: 16px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.segment-btn:hover:not(.active) { color: var(--text-primary); }
+.segment-btn.active {
+  background: #ffffff;
+  color: var(--text-primary);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+}
+.tool-btn {
+  padding: 8px 16px;
+  background: rgba(0,0,0,0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tool-btn:hover { background: rgba(0,0,0,0.06); color: var(--text-primary); }
+.tool-btn:active { transform: scale(0.95); }
+
+/* Workspace (Video + Signs) */
+.workspace {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Video Box */
+.video-box {
+  flex: 1;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15), 0 8px 32px rgba(0,0,0,0.08);
+  aspect-ratio: 16/9;
+}
+.video-status {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(8px);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  z-index: 10;
+}
+.dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success-glow); }
+.dot.offline { background: var(--danger); box-shadow: 0 0 8px var(--danger-glow); }
+#video-canvas {
+  display: block;
+}
+
+/* 越界警告UI */
+.distance-warning {
+  position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: rgba(254, 226, 226, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #b91c1c;
+  padding: 20px 40px;
+  border-radius: var(--radius-lg);
+  font-size: 1.5rem;
+  font-weight: 600;
+  box-shadow: 0 8px 32px rgba(239, 68, 68, 0.2);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.distance-warning.active {
+  opacity: 1;
+}
+
+/* Active Signs Box */
+.active-signs {
+  width: 320px;
+  flex-shrink: 0;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.active-signs h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.current-sign {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+#letter {
+  font-size: 4.5rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-primary);
+  text-shadow: 0 0 24px rgba(0,0,0,0.05);
+  margin-bottom: 8px;
+  transition: color 0.3s, text-shadow 0.3s;
+}
+#letter.committed { color: var(--success); text-shadow: 0 0 24px var(--success-glow); }
+#letter.uncommitted { color: #f59e0b; text-shadow: 0 0 24px rgba(245, 158, 11, 0.3); }
+
+#conf-text { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px; }
+.progress-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 4px var(--accent-glow);
+}
+
+.history-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+.hist-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+.hist-letter { font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); width: 24px;}
+.hist-score { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary); width: 36px; text-align: right;}
+
+/* Translation Bottom Area */
+.translation-box {
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 140px;
+  flex-shrink: 0;
+}
+.translation-box h3 {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+#raw-word {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-height: 1.5rem;
+  letter-spacing: 2px;
+  font-family: var(--font-mono);
+}
+#sentence {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  word-break: break-word;
+  min-height: 3rem;
+}
+.cursor { display: inline-block; width: 4px; height: 2rem; background: var(--accent); vertical-align: middle; animation: blink 1s step-end infinite; margin-left: 8px;}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+
+/* Custom Modal */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(255,255,255,0.4);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.9), 0 16px 40px rgba(0,0,0,0.1);
+  text-align: center;
+  transform: translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.modal-overlay.active .modal-box { transform: translateY(0); }
+
+.toggle-switch {
+  position: relative; display: inline-block; width: 44px; height: 24px;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.1); border-radius: 24px; transition: 0.3s;
+}
+.toggle-slider:before {
+  content: ""; position: absolute;
+  height: 18px; width: 18px; left: 3px; bottom: 3px;
+  background: white; border-radius: 50%; transition: 0.3s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--accent); }
+.toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+
+.shortcut-panel {
+  display: flex; flex-direction: column; gap: 8px; padding-top: 0;
+  max-height: 0; opacity: 0; pointer-events: none;
+  overflow-y: auto; padding-right: 4px;
+  transition: max-height 0.3s ease, opacity 0.3s ease, padding-top 0.3s ease;
+}
+.shortcut-panel.open {
+  max-height: 220px; opacity: 1; padding-top: 8px; pointer-events: auto;
+}
+.shortcut-panel::-webkit-scrollbar { width: 4px; }
+.shortcut-panel::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 2px; }
+
+.shortcut-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(0,0,0,0.06); border-radius: 10px;
+  cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.shortcut-item:hover {
+  background: white; transform: translateX(2px) translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1);
+}
+.shortcut-item:active { transform: scale(0.96); }
+
+.shortcut-key {
+  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  background: rgba(14,165,233,0.1); border-radius: 6px; font-weight: 700;
+  font-family: var(--font-mono); color: var(--accent); font-size: 0.85rem; flex-shrink: 0;
+}
+.shortcut-phrase {
+  font-size: 0.85rem; color: var(--text-primary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1;
+}
+
+.shortcut-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 8px; max-height: 380px; overflow-y: auto; padding: 4px;
+}
+.shortcut-field { display: flex; flex-direction: column; gap: 2px; }
+.shortcut-field label {
+  font-size: 0.75rem; font-weight: 600; color: var(--text-secondary);
+}
+.shortcut-field input {
+  padding: 6px 8px; border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 6px; font-size: 0.8rem; outline: none; transition: border 0.2s;
+}
+.shortcut-field input:focus { border-color: var(--accent); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="sidebar glass">
+  <div class="brand">
+    <div class="brand-icon">⌘</div>
+    <span>ASL Pro Studio</span>
+  </div>
+
+  <div class="section" id="asl-auth">
+    <div class="section-title">身份与验证</div>
+    
+    <!-- Guest State -->
+    <div id="guest-state" style="display: flex; align-items: center; gap: 12px; transition: opacity 0.3s;">
+      <button class="glass-btn" style="width: auto; padding: 8px 24px; font-size: 0.85rem;" onclick="handleRegister()">
+        注册
+      </button>
+      <button class="glass-btn primary" style="width: auto; padding: 8px 24px; font-size: 0.85rem;" onclick="handleLogin()">
+        面容登录
+      </button>
+    </div>
+    
+    <!-- User State -->
+    <div id="user-state" style="display: none; flex-direction: column; gap: 12px; transition: opacity 0.3s;">
+      <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.02); padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid rgba(0,0,0,0.04);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.85rem; box-shadow: 0 2px 8px var(--accent-glow);">👤</div>
+          <span id="user-badge" style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);"></span>
+        </div>
+        <button class="glass-btn" style="width: auto; padding: 4px 12px; font-size: 0.75rem; color: var(--danger); border-color: rgba(239,68,68,0.2); background: rgba(239,68,68,0.05);" onclick="handleLogout()">注销</button>
+      </div>
+      
+      <div class="glass-panel" style="padding: 12px; display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-primary);">⚡ 快捷词模式</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="shortcut-toggle" onchange="toggleShortcutMode()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <button id="edit-shortcuts-btn" class="glass-btn" style="padding: 8px; font-size: 0.8rem; background: #fff;" onclick="openShortcutEditor()">编辑私人词库</button>
+        <div id="shortcut-panel" class="shortcut-panel"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="asl-params">
+    <div class="section-title">判定参数控制</div>
+    <div class="glass-panel">
+      <!-- 静态识别稳定帧数 -->
+      <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom: 4px;">基础停留帧数 (STABLE)</div>
+      <div class="range-group">
+        <input type="range" id="stable-slider" min="5" max="60" value="15">
+        <span id="stable-val" style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent); width: 24px; text-align: right;">15</span>
+      </div>
+      
+      <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.05); margin: 16px 0;">
+      
+      <!-- 动态 J/Z 识别观察窗 -->
+      <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom: 4px;">动态追踪窗 (DYNAMIC)</div>
+      <div class="range-group">
+        <input type="range" id="dynamic-slider" min="15" max="90" value="45">
+        <span id="dynamic-val" style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent); width: 24px; text-align: right;">45</span>
+      </div>
+      
+      <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.05); margin: 16px 0;">
+      
+      <!-- 自动断句等待 -->
+      <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom: 4px;">自动断句等待 (TIMEOUT 秒)</div>
+      <div class="range-group">
+        <input type="range" id="timeout-slider" min="2" max="15" value="8">
+        <span id="timeout-val" style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent); width: 24px; text-align: right;">8</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" style="margin-top: auto;" id="asl-dict">
+    <div class="section-title">手语字典 (A-Z)</div>
+    <button class="glass-btn" id="ref-toggle" onclick="toggleRef()" style="margin-bottom: 12px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      <span>展开手语字典</span>
+    </button>
+    
+    <div id="dict-container" style="display: none; flex-direction: column; gap: 10px;">
+      <div id="dict-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;"></div>
+      <div id="dict-view" style="display: none; flex-direction: column; align-items: center; gap: 10px;">
+        <button class="glass-btn" onclick="backToDictGrid()" style="align-self: flex-start; padding: 4px 12px; font-size: 0.85rem;">
+          ← 返回列表
+        </button>
+        <img id="dict-img" src="" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); background: rgba(255,255,255,0.05); min-height: 120px; object-fit: contain;">
+        <div id="dict-composite" style="display: none; width: 100%; align-items: center; justify-content: center; gap: 10px;">
+          <img id="dict-comp-src" src="" style="flex: 1; min-width: 0; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); background: rgba(255,255,255,0.05); object-fit: contain; max-height: 150px;">
+          <div style="font-size: 2rem; color: var(--accent);">➔</div>
+          <img id="dict-comp-dst" src="" style="flex: 1; min-width: 0; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); background: rgba(255,255,255,0.05); object-fit: contain; max-height: 150px;">
+        </div>
+        <div id="dict-label" style="font-size: 1.2rem; font-weight: bold; color: var(--accent);"></div>
+        <div id="dict-desc" style="font-size: 0.85rem; color: #ccc; text-align: center; display: none; line-height: 1.4;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="main-content">
+  
+  <header class="top-nav">
+    <div style="font-weight: 600; font-size: 1.1rem; color: var(--text-primary);" id="header-title">
+      实时识别系统
+    </div>
+    
+    <div class="toolbar" id="asl-toolbar">
+      <button class="tool-btn" onclick="sendCommand('space')" title="快捷键: 空格">提交单词</button>
+      <button class="tool-btn" onclick="sendCommand('backspace')" title="快捷键: Backspace">退格</button>
+      <button class="tool-btn" onclick="sendCommand('reset')" title="快捷键: R">重置当前词</button>
+      <button class="tool-btn" onclick="sendCommand('clear')" title="快捷键: Enter" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">清空整个句子</button>
+    </div>
+
+
+
+  </header>
+
+
+
+  <div class="workspace">
+    <div class="video-box glass">
+      <div class="video-status" id="status">
+        <div class="dot offline" id="status-dot"></div>
+        <span id="status-text">未连接</span>
+      </div>
+      
+      <!-- WebSocket 二进制帧视频流 -->
+      <canvas id="video-canvas" width="640" height="360" style="width:100%;height:100%;object-fit:contain;transform:scaleX(-1);position:absolute;top:0;left:0;"></canvas>
+      <canvas id="lm-canvas" width="640" height="360" style="width:100%;height:100%;object-fit:contain;position:absolute;top:0;left:0;transform:scaleX(-1);pointer-events:none;"></canvas>
+      <canvas id="depth-pip" width="160" height="120" style="position:absolute;bottom:8px;left:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.3);z-index:5;display:none;transform:scaleX(-1);"></canvas>
+
+      <!-- 距离警告 UI -->
+      <div id="distance-warning" class="distance-warning">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <span id="warning-text">手部距离过远，请靠近</span>
+      </div>
+    </div>
+
+    <div class="active-signs glass" id="asl-panel">
+      <h3>动作捕获面板</h3>
+      
+      <div class="current-sign">
+        <div id="letter">-</div>
+        <div id="conf-text">等待手势...</div>
+        <div class="progress-track" style="margin-bottom: 8px;">
+          <div class="progress-fill" id="conf-bar"></div>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-secondary); width: 100%; margin-bottom: 6px;">
+           停留识别进度 (Hold Progress)
+        </div>
+        <div class="progress-track" style="height: 6px; background: rgba(0,0,0,0.05);">
+          <div class="progress-fill" id="buffer-bar" style="background: #8b5cf6; box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);"></div>
+        </div>
+      </div>
+
+      <div style="font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">
+        已识别单词 (Recognized)
+      </div>
+      <div class="history-list" id="history-container" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); padding: 12px;">
+        <!-- Javascript injected history -->
+      </div>
+    </div>
+  </div>
+
+  <div class="translation-box glass" id="asl-translation">
+    <div style="margin-bottom: -16px;">
+      <h3 style="color: var(--text-secondary);">当前输入拼写 (Current Input)</h3>
+    </div>
+    <div id="raw-word"></div>
+    
+    <div style="margin-top: 8px; margin-bottom: -16px;">
+      <h3 style="color: var(--accent);">实时句子翻译 (Translation)</h3>
+    </div>
+    <div>
+      <span id="sentence"></span><span class="cursor"></span>
+    </div>
+  </div>
+
+</main>
+
+<!-- Modal Overlay -->
+<div class="modal-overlay" id="modal" onclick="closeModal()">
+  <div class="modal-box glass" onclick="event.stopPropagation()">
+    <h3 id="modal-title" style="margin-bottom: 12px; color: var(--text-primary);">提示</h3>
+    <div id="modal-desc" style="color: var(--text-secondary); margin-bottom: 24px; font-size: 0.95rem;">功能修改中...</div>
+    <div id="modal-btns" style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;"></div>
+  </div>
+</div>
+
+<script>
+const STATUS_TEXT = document.getElementById("status-text");
+const STATUS_DOT = document.getElementById("status-dot");
+const WARNING_BOX = document.getElementById("distance-warning");
+const WARNING_TEXT = document.getElementById("warning-text");
+
+const VIDEO_CANVAS = document.getElementById("video-canvas");
+const LM_CANVAS = document.getElementById("lm-canvas");
+const VIDEO_CTX = VIDEO_CANVAS.getContext("2d");
+const LM_CTX = LM_CANVAS.getContext("2d");
+
+// 建立 WebSocket 监听后端状态（自动适配当前访问地址，局域网访问也能连接）
+const ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws");
+ws.binaryType = 'arraybuffer';
+
+// UI Interactivity
+document.getElementById('stable-slider').addEventListener('input', (e) => {
+    document.getElementById('stable-val').textContent = e.target.value;
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: "setting", stable_frames: parseInt(e.target.value) }));
+    }
+});
+
+document.getElementById('dynamic-slider').addEventListener('input', (e) => {
+    document.getElementById('dynamic-val').textContent = e.target.value;
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: "setting", dynamic_window: parseInt(e.target.value) }));
+    }
+});
+
+document.getElementById('timeout-slider').addEventListener('input', (e) => {
+    document.getElementById('timeout-val').textContent = e.target.value;
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: "setting", sentence_timeout: parseInt(e.target.value) }));
+    }
+});
+
+function setStatus(msg, isOnline = false) {
+    STATUS_TEXT.textContent = msg;
+    if (isOnline) {
+        STATUS_DOT.classList.remove("offline");
+    } else {
+        STATUS_DOT.classList.add("offline");
+    }
+}
+
+// Modal logic
+
+function showModal(title, desc, buttons) {
+  document.getElementById("modal-title").textContent = title;
+  document.getElementById("modal-desc").innerHTML = typeof desc === "string" ? desc : "";
+  const btnContainer = document.getElementById("modal-btns");
+  btnContainer.innerHTML = "";
+  if (buttons) {
+    buttons.forEach(function(b) {
+      const btn = document.createElement("button");
+      btn.className = b.class || "glass-btn";
+      btn.textContent = b.text;
+      btn.style.margin = "4px";
+      btn.addEventListener("click", typeof b.onclick === "function" ? b.onclick : function() {
+        (new Function(b.onclick))();
+      });
+      btnContainer.appendChild(btn);
+    });
+  } else if (buttons === undefined) {
+    const okBtn = document.createElement("button");
+    okBtn.className = "glass-btn primary";
+    okBtn.textContent = "知道啦";
+    okBtn.addEventListener("click", closeModal);
+    btnContainer.appendChild(okBtn);
+  }
+  document.getElementById("modal").classList.add("active");
+  LM_CTX.clearRect(0, 0, LM_CANVAS.width, LM_CANVAS.height);
+}
+
+function showAuthResult(data, badge) {
+  console.log("[AUTH] showAuthResult called, status:", data.status, "user:", data.user, "_loggedInUser:", window._loggedInUser);
+  var preview = document.getElementById("auth-preview");
+  if (preview && preview._blobUrl) {
+    URL.revokeObjectURL(preview._blobUrl);
+    preview._blobUrl = null;
+  }
+  window._captureAdvance = null;
+
+  var title = "";
+  var desc = "";
+  if (data.status === "success") {
+    badge.textContent = "Welcome, " + data.user;
+    badge.style.color = "#10b981";
+    title = "认证成功";
+    desc = "欢迎, " + data.user + (data.insecure ? " (非安全模式)" : "");
+  } else if (data.status === "spoof") {
+    title = "活体检测失败";
+    desc = "检测到平面伪造攻击！请使用真实人脸。";
+  } else if (data.status === "no_face") {
+    title = "未检测到人脸";
+    desc = "请确保面部在摄像头范围内。";
+  } else if (data.status === "unknown") {
+    title = "身份未知";
+    desc = "未在数据库中匹配到您的身份，请先注册。";
+  } else if (data.status === "invalid_depth") {
+    title = "深度数据无效";
+    desc = "深度传感器读数异常，请调整位置重试。";
+  } else if (data.status === "no_camera") {
+    title = "摄像头未就绪";
+    desc = "请等待摄像头初始化完成。";
+  } else if (data.status === "cleared") {
+    badge.textContent = "Guest";
+    badge.style.color = "var(--text-secondary)";
+    title = "数据清理";
+    desc = "已清空所有注册人脸数据。";
+  } else if (data.status === "too_close") {
+    title = "距离过近";
+    desc = "当前距离 " + (data.distance || "?") + "cm，请后退至 35-75cm 范围内。";
+  } else if (data.status === "too_far") {
+    title = "距离过远";
+    desc = "当前距离 " + (data.distance || "?") + "cm，请靠近至 35-75cm 范围内。";
+  } else {
+    title = "认证失败";
+    desc = "状态: " + data.status;
+  }
+
+  document.getElementById("modal-title").textContent = title;
+  document.getElementById("modal-desc").textContent = desc;
+  var btnContainer = document.getElementById("modal-btns");
+  btnContainer.innerHTML = "";
+  var okBtn = document.createElement("button");
+  okBtn.className = "glass-btn primary";
+  okBtn.textContent = "知道啦";
+  okBtn.addEventListener("click", function() {
+    document.getElementById("modal").classList.remove("active");
+  });
+  btnContainer.appendChild(okBtn);
+  document.getElementById("modal").classList.add("active");
+}
+
+function closeModal() {
+  const preview = document.getElementById("auth-preview");
+  if (preview) {
+    if (preview._blobUrl) {
+      URL.revokeObjectURL(preview._blobUrl);
+      preview._blobUrl = null;
+    }
+    preview._lastUpdate = null;
+  }
+  window._captureAdvance = null;
+  window._capturePendingResult = undefined;
+  window._captureStepDone = false;
+  document.getElementById("modal").classList.remove("active");
+}
+
+ws.onopen = () => {
+  window._userShortcuts = {};
+  window._shortcutMode = false;
+  window._loggedInUser = null;
+  setStatus("后台渲染流已连接", true); 
+};
+ws.onclose = () => { 
+  setStatus("与后台断开连接", false); 
+};
+
+let _frameSeq = 0;
+
+ws.onmessage = (e) => {
+  if (e.data instanceof ArrayBuffer) {
+    const seq = ++_frameSeq;
+    const blob = new Blob([e.data], {type: 'image/jpeg'});
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => {
+      if (seq !== _frameSeq) {
+        URL.revokeObjectURL(url);
+        return;
+      }
+      const preview = document.getElementById("auth-preview");
+      if (preview) {
+        const now = Date.now();
+        if (!preview._lastUpdate || now - preview._lastUpdate >= 50) {
+          const oldUrl = preview._blobUrl;
+          if (oldUrl) URL.revokeObjectURL(oldUrl);
+          preview._blobUrl = url;
+          preview.src = url;
+          preview._lastUpdate = now;
+        } else {
+          URL.revokeObjectURL(url);
+        }
+      } else {
+        const cw = VIDEO_CANVAS.width, ch = VIDEO_CANVAS.height;
+        const scale = Math.min(cw / img.width, ch / img.height);
+        const dw = img.width * scale, dh = img.height * scale;
+        const dx = (cw - dw) / 2, dy = (ch - dh) / 2;
+        VIDEO_CTX.fillStyle = '#000';
+        VIDEO_CTX.fillRect(0, 0, cw, ch);
+        VIDEO_CTX.drawImage(img, dx, dy, dw, dh);
+        URL.revokeObjectURL(url);
+      }
+    };
+    img.src = url;
+    return;
+  }
+
+  const data = JSON.parse(e.data);
+  if (data.type === "auth_result") {
+    console.log("[AUTH] auth_result received:", JSON.stringify({status: data.status, user: data.user, hasShortcuts: !!data.shortcuts}));
+    var badge = document.getElementById("user-badge");
+    if (data.status === "success") {
+      if (data.user) {
+        window._loggedInUser = data.user;
+        console.log("[AUTH] _loggedInUser set to:", data.user);
+      }
+      if (data.shortcuts) {
+        window._userShortcuts = data.shortcuts;
+        console.log("[AUTH] _userShortcuts loaded, keys:", Object.keys(data.shortcuts).length);
+      }
+      updateShortcutUI();
+      console.log("[AUTH] updateShortcutUI called, _loggedInUser=", window._loggedInUser);
+    }
+    if (data.status === "cleared") {
+      handleLogout();
+    }
+    window._capturePendingResult = data;
+    if (window._captureStepDone) {
+      console.log("AUTH_RESULT showing now");
+      showAuthResult(data, badge);
+      window._capturePendingResult = undefined;
+      window._captureStepDone = false;
+    } else {
+      console.log("AUTH_RESULT queued for later");
+    }
+    return;
+  }
+  if (data.type !== "result") return;
+
+  // Depth PiP
+  if (data.depth_pip) {
+    const pip = document.getElementById("depth-pip");
+    if (pip) {
+      pip.style.display = "block";
+      const img = new Image();
+      img.onload = function() {
+        const ctx = pip.getContext("2d");
+        ctx.drawImage(img, 0, 0, pip.width, pip.height);
+      };
+      img.src = "data:image/jpeg;base64," + data.depth_pip;
+    }
+  }
+
+  if (data.shortcut_mode !== undefined && data.shortcut_mode !== window._shortcutMode) {
+    window._shortcutMode = data.shortcut_mode;
+    document.getElementById("shortcut-toggle").checked = data.shortcut_mode;
+    updateShortcutPanel();
+  }
+  if (data.logged_in_user !== undefined && data.logged_in_user !== window._loggedInUser) {
+    console.log("[RESULT] _loggedInUser changed:", window._loggedInUser, "->", data.logged_in_user);
+    window._loggedInUser = data.logged_in_user;
+    updateShortcutUI();
+  }
+
+  // Draw landmarks - skip when auth modal is active
+  if (data.landmarks && !document.getElementById("auth-preview")) {
+    const cw = LM_CANVAS.width, ch = LM_CANVAS.height;
+    const imgW = 640, imgH = 480;
+    const scale = Math.min(cw / imgW, ch / imgH);
+    const dw = imgW * scale, dh = imgH * scale;
+    const dx = (cw - dw) / 2, dy = (ch - dh) / 2;
+    LM_CTX.clearRect(0, 0, cw, ch);
+    // build hand bounding box from landmarks
+    let minX = 1, minY = 1, maxX = 0, maxY = 0;
+    for (const lm of data.landmarks) {
+      if (lm[0] < minX) minX = lm[0];
+      if (lm[0] > maxX) maxX = lm[0];
+      if (lm[1] < minY) minY = lm[1];
+      if (lm[1] > maxY) maxY = lm[1];
+    }
+    const pad = 0.02;
+    minX = Math.max(0, minX - pad); minY = Math.max(0, minY - pad);
+    maxX = Math.min(1, maxX + pad); maxY = Math.min(1, maxY + pad);
+    const bx = dx + minX * dw, by = dy + minY * dh;
+    const bw = (maxX - minX) * dw, bh = (maxY - minY) * dh;
+    const isInRange = !data.distance_warning;
+    const boxColor = isInRange ? '#0f0' : '#f33';
+    const fontSize = Math.max(14, Math.min(bh * 0.3, 20));
+    LM_CTX.strokeStyle = boxColor; LM_CTX.lineWidth = 2;
+    LM_CTX.strokeRect(bx, by, bw, bh);
+    if (data.distance !== null && data.distance !== undefined) {
+      const distText = data.distance === 0 ? '<30cm' : data.distance + 'cm';
+      LM_CTX.font = 'bold ' + fontSize + 'px "Inter", sans-serif';
+      const textW = LM_CTX.measureText(distText).width;
+      const textX = bx + (bw - textW) / 2;
+      const textY = by - 4;
+      LM_CTX.fillStyle = boxColor;
+      LM_CTX.save();
+      LM_CTX.translate(textX + textW, textY > 0 ? textY : by + bh + fontSize + 4);
+      LM_CTX.scale(-1, 1);
+      LM_CTX.fillText(distText, 0, 0);
+      LM_CTX.restore();
+    }
+  } else {
+    LM_CTX.clearRect(0, 0, LM_CANVAS.width, LM_CANVAS.height);
+  }
+
+  // Distance warning
+  if (data.distance_warning === "too_close") {
+    const d = data.distance === 0 ? '<30' : (data.distance || '?');
+    WARNING_TEXT.textContent = "过近 | " + d + "cm · 请后退";
+    WARNING_BOX.classList.add("active");
+  } else if (data.distance_warning === "too_far") {
+    WARNING_TEXT.textContent = "过远 | " + (data.distance || "?") + "cm · 请靠近";
+    WARNING_BOX.classList.add("active");
+  } else {
+    WARNING_BOX.classList.remove("active");
+  }
+
+  // Letter display
+  const letterEl = document.getElementById("letter");
+  const confText = document.getElementById("conf-text");
+  const confBar = document.getElementById("conf-bar");
+
+  if (data.letter) {
+    letterEl.textContent = data.letter;
+    const pct = Math.round(data.conf * 100);
+    confText.textContent = `当前置信度: ${pct}%`;
+    confBar.style.width = pct + "%";
+
+    const barStr = data.bar || "";
+    const filledCount = (barStr.match(/#/g) || []).length;
+    const totalLen = barStr.length > 0 ? barStr.length : 1;
+    const bufferPct = Math.min((filledCount / totalLen) * 100, 100);
+    document.getElementById("buffer-bar").style.width = bufferPct + "%";
+
+    if (data.committed) {
+      letterEl.classList.add("committed");
+      letterEl.classList.remove("uncommitted");
+      confBar.style.background = "var(--success)";
+    } else {
+      letterEl.classList.add("uncommitted");
+      letterEl.classList.remove("committed");
+      confBar.style.background = "var(--accent)";
+    }
+  } else {
+    letterEl.textContent = "-";
+    letterEl.className = "";
+    confText.textContent = "等待手势...";
+    confBar.style.width = "0%";
+    document.getElementById("buffer-bar").style.width = "0%";
+  }
+
+  document.getElementById("raw-word").textContent = data.raw_word || "";
+if (data.predicted && data.raw_word && data.predicted !== data.raw_word) {
+  const suffix = data.predicted.slice(data.raw_word.length);
+  document.getElementById("raw-word").innerHTML =
+    '<span>' + data.raw_word + '</span>' +
+    '<span style="color:#64748b;font-style:italic;font-weight:300;">' + suffix + '</span>' +
+    '<span style="font-size:0.7rem;color:#475569;margin-left:8px;">TAB to accept</span>';
+} else {
+  document.getElementById("raw-word").textContent = data.raw_word || "";
+}
+  document.getElementById("sentence").textContent = data.sentence || "";
+
+  const historyContainer = document.getElementById("history-container");
+  if (data.completed) {
+     historyContainer.innerHTML = data.completed.slice(-6).reverse().map(w => {
+       const word = w.corrected || w.raw;
+       const time = new Date().toLocaleTimeString('zh-CN', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+       return `
+         <div class="hist-item" style="background: rgba(255,255,255,0.7); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+           <div class="hist-letter" style="color: var(--accent); font-size: 1rem; width: auto;">${word}</div>
+           <div class="hist-score" style="width: auto; font-size: 0.75rem; color: var(--text-muted);">${time}</div>
+         </div>
+       `;
+     }).join("");
+  }
+};
+
+document.addEventListener("keydown", (e) => {
+  // 如果焦点在输入框/文本域，不拦截任何按键
+  if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA" || document.activeElement.isContentEditable)) {
+    return;
+  }
+  if (e.key === "Tab") {
+    e.preventDefault();
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: "command", cmd: "accept_predict" }));
+    }
+    return;
+  }
+  if (e.key === " ") { e.preventDefault(); sendCommand("space"); }
+  else if (e.key === "Backspace") { e.preventDefault(); sendCommand("backspace"); }
+  else if (e.key === "r" || e.key === "R") { sendCommand("reset"); }
+  else if (e.key === "Enter") { sendCommand("clear"); }
+});
+
+function sendCommand(cmd) {
+  if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: "command", cmd }));
+}
+
+function handleRegister() {
+  showModal(
+    "输入用户名",
+    "<input id='reg-name-input' type='text' placeholder='请输入拼音用户名' style='width:100%;padding:10px 14px;border:2px solid rgba(0,0,0,0.1);border-radius:10px;font-size:1rem;outline:none;transition:border 0.2s;' onfocus='this.style.borderColor=\"var(--accent)\"' onblur='this.style.borderColor=\"rgba(0,0,0,0.1)\"'>",
+    [
+      { text: "取消", class: "glass-btn", onclick: "closeModal()" },
+      { text: "开始注册", class: "glass-btn primary", onclick: function() {
+        var input = document.getElementById("reg-name-input");
+        var username = input ? input.value.trim() : "";
+        if (!username) return;
+        closeModal();
+        startCountdownAuth("register", username);
+      }}
+    ]
+  );
+  setTimeout(function() {
+    var inp = document.getElementById("reg-name-input");
+    if (inp) inp.focus();
+  }, 100);
+}
+
+function handleLogin() {
+  startCountdownAuth("login");
+}
+
+function handleLogout() {
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: "command", cmd: "logout" }));
+  }
+}
+
+function startCountdownAuth(cmd, username) {
+  window._captureStepDone = false;
+  window._capturePendingResult = undefined;
+  var countdown = cmd === "register" ? 10 : 3;
+  var elapsed = 0;
+
+  if (!document.getElementById("spin-keyframes")) {
+    var s = document.createElement("style");
+    s.id = "spin-keyframes";
+    s.textContent = "@keyframes spin { to { transform: rotate(360deg); } }";
+    document.head.appendChild(s);
+  }
+
+  var bodyHtml = "<div style='margin:8px 0;display:flex;justify-content:center;'>" +
+    "<img id='auth-preview' src='' style='max-width:300px;max-height:220px;border-radius:12px;border:2px solid rgba(0,0,0,0.08);transform:scaleX(-1);'>" +
+    "</div>" +
+    "<p id='cd-text' style='text-align:center;font-size:1.2rem;font-weight:700;color:var(--accent);margin:8px 0;'>" + countdown + " 秒</p>" +
+    "<div style='height:6px;background:rgba(0,0,0,0.08);border-radius:3px;overflow:hidden;margin:4px 0;'>" +
+    "<div id='cd-bar' style='height:100%;background:var(--accent);border-radius:3px;width:0%;'></div>" +
+    "</div>" +
+    "<p style='text-align:center;font-size:0.75rem;color:var(--text-secondary);'>" +
+    (cmd === "register" ? "请上下左右转动头部，自然眨眼" : "请正对摄像头保持不动") + "</p>";
+
+  showModal(
+    cmd === "register" ? "正在录入 · " + username : "正在验证",
+    bodyHtml,
+    []
+  );
+
+  var cdText = document.getElementById("cd-text");
+  var cdBar = document.getElementById("cd-bar");
+  var timer = setInterval(function() {
+    elapsed++;
+    var remain = Math.max(0, countdown - elapsed);
+    if (cdText) cdText.textContent = remain + " 秒";
+    if (cdBar) cdBar.style.width = Math.round((elapsed / countdown) * 100) + "%";
+    if (remain <= 0) {
+      clearInterval(timer);
+      document.getElementById("modal-title").textContent = "处理中...";
+      document.getElementById("modal-desc").innerHTML =
+        "<div style='text-align:center;padding:16px;'>" +
+        "<div style='width:28px;height:28px;border:3px solid rgba(0,0,0,0.08);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 10px;'></div>" +
+        "<p style='font-size:0.8rem;color:var(--text-secondary);'>正在分析采集画面...</p></div>";
+      window._captureStepDone = true;
+      if (window._capturePendingResult) {
+        var badge = document.getElementById("user-badge");
+        showAuthResult(window._capturePendingResult, badge);
+        window._capturePendingResult = undefined;
+        window._captureStepDone = false;
+      }
+    }
+  }, 1000);
+
+  window._stepCleanup = function() { clearInterval(timer); };
+
+  window._stepCleanup = function() { clearInterval(timer); };
+
+  if (ws.readyState === WebSocket.OPEN) {
+    var payload = cmd === "register"
+      ? { type: "command", cmd: "register", username: username }
+      : { type: "command", cmd: "login" };
+    ws.send(JSON.stringify(payload));
+  } else {
+    closeModal();
+    showModal("连接断开", "WebSocket未连接，请刷新页面。");
+  }
+}
+
+// keep captureAndAuth as fallback, unused now
+function captureAndAuth(cmd, username) {
+  startCountdownAuth(cmd, username);
+}
+
+function captureAndAuth(cmd, username) {
+  window._capturePendingResult = undefined;
+  window._captureStepDone = false;
+  var steps = [
+    "正对摄像头，保持面部居中",
+    "缓慢向左转动头部",
+    "缓慢向右转动头部",
+    "缓慢抬头看上方",
+    "缓慢低头看下方",
+    "自然眨眼两次",
+    "保持微笑",
+  ];
+  var curStep = 0;
+  var totalSteps = steps.length;
+
+  function buildStepList() {
+    var list = "";
+    for (var i = 0; i < totalSteps; i++) {
+      var done = i < curStep;
+      var active = i === curStep;
+      var bg = done ? "rgba(16,185,129,0.06)" : (active ? "rgba(14,165,233,0.06)" : "transparent");
+      var color = active ? "var(--accent)" : (done ? "#10b981" : "var(--text-muted)");
+      var weight = active ? "600" : "400";
+      var icon = done ? "<span style='color:#10b981;'>\u2713</span>" :
+        "<span style='display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;border:2px solid " + (active ? "var(--accent)" : "rgba(0,0,0,0.12)") + ";text-align:center;font-size:0.6rem;color:" + (active ? "var(--accent)" : "var(--text-muted)") + ";'>" + (i + 1) + "</span>";
+      list += "<div style='display:flex;align-items:center;gap:8px;padding:4px 8px;margin:1px 0;border-radius:6px;font-size:0.8rem;color:" + color + ";font-weight:" + weight + ";background:" + bg + ";transition:all 0.2s;'>" +
+        icon + "<span>" + steps[i] + "</span></div>";
+    }
+    if (curStep >= totalSteps) {
+      list += "<div style='text-align:center;padding:12px 0;'>" +
+        "<div style='width:26px;height:26px;border:3px solid rgba(0,0,0,0.08);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 10px;'></div>" +
+        "<p style='font-size:0.8rem;color:var(--text-secondary);'>正在验证活体，请稍候...</p></div>";
+    }
+    return list;
+  }
+
+  function advance() {
+    curStep++;
+    document.getElementById("modal-desc").innerHTML =
+      "<div style='margin:8px 0;display:flex;justify-content:center;'>" +
+      "<img id='auth-preview' src='' style='max-width:300px;max-height:220px;border-radius:12px;border:2px solid rgba(0,0,0,0.08);transform:scaleX(-1);'>" +
+      "</div>" +
+      "<div style='margin-top:10px;'>" + buildStepList() + "</div>";
+    if (curStep >= totalSteps) {
+      window._captureStepDone = true;
+      var btns = document.querySelectorAll("#modal-btns button");
+      for (var b = 0; b < btns.length; b++) { btns[b].style.display = "none"; }
+      if (window._capturePendingResult) {
+        var badge = document.getElementById("user-badge");
+        showAuthResult(window._capturePendingResult, badge);
+        window._capturePendingResult = null;
+      }
+    }
+  }
+
+  if (!document.getElementById("spin-keyframes")) {
+    var s = document.createElement("style");
+    s.id = "spin-keyframes";
+    s.textContent = "@keyframes spin { to { transform: rotate(360deg); } }";
+    document.head.appendChild(s);
+  }
+
+  showModal(
+    cmd === "register" ? "正在录入 · " + username : "正在验证",
+    "<div style='margin:8px 0;display:flex;justify-content:center;'>" +
+    "<img id='auth-preview' src='' style='max-width:300px;max-height:220px;border-radius:12px;border:2px solid rgba(0,0,0,0.08);transform:scaleX(-1);'>" +
+    "</div>" +
+    "<div style='margin-top:10px;'>" + buildStepList() + "</div>",
+    [
+      { text: "下一步 →", class: "glass-btn primary", onclick: "window._captureAdvance()" }
+    ]
+  );
+
+  window._captureAdvance = advance;
+
+  if (ws.readyState === WebSocket.OPEN) {
+    const payload = cmd === "register"
+      ? { type: "command", cmd: "register", username: username }
+      : { type: "command", cmd: "login" };
+    ws.send(JSON.stringify(payload));
+  } else {
+    closeModal();
+    showModal("连接断开", "WebSocket未连接，请刷新页面。");
+  }
+}
+
+let dictInitialized = false;
+function toggleRef() {
+  const container = document.getElementById("dict-container");
+  const toggleBtn = document.getElementById("ref-toggle");
+  const span = toggleBtn.querySelector('span');
+  if (container.style.display === "none" || container.style.display === "") {
+    container.style.display = "flex";
+    if(span) span.innerText = "收起手语字典";
+    if (!dictInitialized) {
+      initDictGrid();
+    }
+  } else {
+    container.style.display = "none";
+    if(span) span.innerText = "展开手语字典";
+  }
+}
+
+function initDictGrid() {
+  const grid = document.getElementById('dict-grid');
+  grid.innerHTML = '';
+  for (let i = 0; i < 26; i++) {
+    const letter = String.fromCharCode(65 + i);
+    const btn = document.createElement('button');
+    btn.className = 'glass-btn';
+    btn.style.padding = '8px 0';
+    btn.style.fontSize = '1.1rem';
+    btn.style.fontWeight = 'bold';
+    btn.innerText = letter;
+    btn.onclick = () => showDictLetter(letter);
+    grid.appendChild(btn);
+  }
+  dictInitialized = true;
+}
+
+function showDictLetter(letter) {
+  document.getElementById('dict-grid').style.display = 'none';
+  const view = document.getElementById('dict-view');
+  view.style.display = 'flex';
+  
+  const img = document.getElementById('dict-img');
+  const comp = document.getElementById('dict-composite');
+  const compSrc = document.getElementById('dict-comp-src');
+  const compDst = document.getElementById('dict-comp-dst');
+  
+  if (letter === 'J') {
+    img.style.display = 'none';
+    comp.style.display = 'flex';
+    compSrc.src = '/static/letters/I.png';
+    compDst.src = '/static/letters/J.png';
+  } else if (letter === 'Z') {
+    img.style.display = 'none';
+    comp.style.display = 'flex';
+    compSrc.src = '/static/letters/D.png';
+    compDst.src = '/static/letters/Z.png';
+  } else {
+    img.style.display = 'block';
+    comp.style.display = 'none';
+    img.src = '/static/letters/' + letter + '.png';
+    img.alt = letter + ' Sign';
+  }
+  
+  img.onerror = () => { img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23888">无图片</text></svg>'; };
+  compDst.onerror = () => { compDst.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23888">无图片</text></svg>'; };
+  
+  document.getElementById('dict-label').innerText = '手势: ' + letter;
+  
+  const desc = document.getElementById('dict-desc');
+  if (letter === 'Z') {
+    desc.innerText = '注：需要在识别出D后，将食指下压至如图所示。';
+    desc.style.display = 'block';
+  } else if (letter === 'J') {
+    desc.innerText = '注：需要在识别出I后，将小拇指下压至如图所示。';
+    desc.style.display = 'block';
+  } else {
+    desc.style.display = 'none';
+  }
+}
+
+function backToDictGrid() {
+  document.getElementById('dict-view').style.display = 'none';
+  document.getElementById('dict-grid').style.display = 'grid';
+}
+
+// Update Range Slider Progress
+window.addEventListener('DOMContentLoaded', () => {
+  const ranges = document.querySelectorAll('input[type="range"]');
+  ranges.forEach(range => {
+    const updateProgress = () => {
+      const min = range.min || 0;
+      const max = range.max || 100;
+      const progress = ((range.value - min) / (max - min)) * 100;
+      range.style.setProperty('--range-progress', `${progress}%`);
+    };
+    range.addEventListener('input', updateProgress);
+    updateProgress(); // init
+  });
+});
+
+function updateShortcutUI() {
+  const guestState = document.getElementById("guest-state");
+  const userState = document.getElementById("user-state");
+  
+  if (window._loggedInUser) {
+    if (guestState) guestState.style.display = "none";
+    if (userState) {
+      userState.style.display = "flex";
+      const badge = document.getElementById("user-badge");
+      if (badge) badge.textContent = window._loggedInUser;
+    }
+  } else {
+    if (guestState) guestState.style.display = "flex";
+    if (userState) userState.style.display = "none";
+  }
+  
+  updateShortcutPanel();
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function updateShortcutPanel() {
+  const panel = document.getElementById("shortcut-panel");
+  if (!panel) return;
+  if (!window._loggedInUser || !window._shortcutMode) {
+    panel.classList.remove('open');
+    setTimeout(() => { if (!panel.classList.contains('open')) panel.innerHTML = ""; }, 300);
+    return;
+  }
+  const sc = window._userShortcuts || {};
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let html = "";
+  for (const ch of letters) {
+    const key = ch.toLowerCase();
+    const phrase = sc[key];
+    if (!phrase) continue;
+    html += '<div class="shortcut-item" onclick="sendShortcutKey(\'' + ch + '\')" title="快捷发送">' +
+            '<div class="shortcut-key">' + ch + '</div>' +
+            '<div class="shortcut-phrase">' + escapeHtml(phrase) + '</div>' +
+            '</div>';
+  }
+  if (!html) {
+    panel.classList.remove('open');
+    setTimeout(() => { if (!panel.classList.contains('open')) panel.innerHTML = ""; }, 300);
+    return;
+  }
+  // Immediately set content so it's there during the transition
+  panel.innerHTML = html;
+  
+  // Force a browser reflow before adding the open class to ensure transition plays
+  void panel.offsetWidth; 
+  
+  panel.classList.add('open');
+}
+
+function toggleShortcutMode() {
+  const checkbox = document.getElementById("shortcut-toggle");
+  const checked = checkbox.checked;
+  
+  if (checked && !window._loggedInUser) {
+    checkbox.checked = false;
+    showModal("提示", "请先通过人脸识别登录后再开启快捷词模式。");
+    return;
+  }
+  
+  window._shortcutMode = checked;
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: "command", cmd: "toggle_shortcuts", active: checked }));
+  }
+  updateShortcutPanel();
+}
+
+function sendShortcutKey(ch) {
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: "command", cmd: "shortcut_expand", key: ch }));
+  }
+}
+
+function openShortcutEditor() {
+  console.log("[SC] openShortcutEditor called, _loggedInUser:", window._loggedInUser, "_userShortcuts keys:", Object.keys(window._userShortcuts || {}).length);
+  if (!window._loggedInUser) {
+    showModal("提示", "请先通过人脸识别登录后再编辑快捷词。");
+    return;
+  }
+  const sc = window._userShortcuts || {};
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let gridHtml = "";
+  for (const ch of letters) {
+    const key = ch.toLowerCase();
+    gridHtml +=
+      '<div class="shortcut-field">' +
+        '<label>' + ch + '</label>' +
+        '<input id="sc-input-' + key + '" type="text" placeholder="无" value="' + (sc[key] || "").replace(/"/g, '&quot;') + '">' +
+      '</div>';
+  }
+  const bodyHtml =
+    '<div style="text-align:left;">' +
+      '<div class="shortcut-grid">' + gridHtml + '</div>' +
+    '</div>';
+
+  showModal("编辑快捷词", bodyHtml, [
+    { text: "取消", class: "glass-btn", onclick: "closeModal()" },
+    { text: "保存", class: "glass-btn primary", onclick: "saveShortcuts()" }
+  ]);
+}
+
+function saveShortcuts() {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const newSc = {};
+  for (const ch of letters) {
+    const key = ch.toLowerCase();
+    const input = document.getElementById("sc-input-" + key);
+    if (input && input.value.trim()) {
+      newSc[key] = input.value.trim();
+    }
+  }
+  window._userShortcuts = newSc;
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: "command", cmd: "update_shortcuts", shortcuts: newSc }));
+  }
+  closeModal();
+  updateShortcutPanel();
+}
+
+
+</script>
+</body>
+</html>

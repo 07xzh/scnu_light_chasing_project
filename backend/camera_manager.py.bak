@@ -1,0 +1,118 @@
+import sys
+import os
+
+import cv2
+import numpy as np
+import time
+
+class CameraManager:
+    """
+    相机管理类
+    默认使用 OpenCV 本地摄像头采集；
+    如设置环境变量 ENABLE_ORBBEC=1 且安装了 pyorbbecsdk、连接了 Orbbec Femto 相机，
+    则优先使用 Orbbec SDK 获取 RGB-D 物理深度（可用于人脸活体检测）。
+    """
+    def __init__(self):
+        self.mode = "OPENCV"
+        self.pipeline = None
+        self.cap = None
+        self._init_camera()
+        
+    def _init_camera(self):
+        # 尝试引入 Orbbec SDK (可能叫 pyorbbecsdk 或 pyorbbecsdk2)，仅当显式开启时
+        has_ob = False
+        if os.environ.get("ENABLE_ORBBEC", "").strip() == "1":
+            try:
+                import pyorbbecsdk2 as ob
+                has_ob = True
+                self.ob = ob
+            except ImportError:
+                try:
+                    from pyorbbecsdk import Pipeline, Config, OBSensorType, OBFormat
+                    import pyorbbecsdk as ob
+                    has_ob = True
+                    self.ob = ob
+                except ImportError:
+                    pass
+
+        if has_ob:
+            print("[CAMERA] 检测到 Orbbec SDK 库，尝试初始化 Femto 硬件深度相机...")
+            try:
+                # 初始化 Orbbec 硬件 (伪代码，基于最常见的 pyorbbecsdk API)
+                self.pipeline = self.ob.Pipeline()
+                config = self.ob.Config()
+                # 尝试开启 RGB 和 Depth (使用默认配置)
+                config.enable_stream(self.ob.OBSensorType.COLOR_SENSOR)
+                config.enable_stream(self.ob.OBSensorType.DEPTH_SENSOR)
+                
+                # 开启硬件级深度对齐到彩色相机
+                config.set_align_mode(self.ob.OBAlignMode.HW_MODE)
+                
+                self.pipeline.start(config)
+                self.mode = "ORBBEC"
+                print("[CAMERA] Orbbec RGB-D hardware camera started successfully!")
+                return
+            except Exception as e:
+                print(f"[CAMERA] Orbbec hardware init failed ({e}), falling back to OpenCV...")
+                self.pipeline = None
+
+        # 降级到 OpenCV
+        print("[CAMERA] 使用标准 OpenCV 摄像头采集模式...")
+        self.mode = "OPENCV"
+        self.cap = cv2.VideoCapture(0)
+        # 设置基本分辨率
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+
+    def get_frames(self):
+        """
+        返回: rgb_image, depth_image
+        如果没有真实的 depth_image，返回 None
+        """
+        if self.mode == "ORBBEC" and self.pipeline is not None:
+            try:
+                frames = self.pipeline.wait_for_frames(100)
+                if frames is None:
+                    return None, None
+                
+                color_frame = frames.get_color_frame()
+                depth_frame = frames.get_depth_frame()
+                
+                if color_frame is None:
+                    return None, None
+                    
+                color_data = np.asanyarray(color_frame.get_data())
+                expected_size = color_frame.get_height() * color_frame.get_width() * 3
+                
+                if color_data.size == expected_size:
+                    color_image = np.reshape(color_data, (color_frame.get_height(), color_frame.get_width(), 3))
+                    bgr_image = cv2.cvtColor(color_image, cv2.COLOR_RGB2BGR)
+                else:
+                    # 默认流可能是 MJPEG，需要解码
+                    nparr = np.frombuffer(color_data, np.uint8)
+                    bgr_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+                depth_image = None
+                if depth_frame is not None:
+                    depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
+                    depth_image = depth_data.reshape((depth_frame.get_height(), depth_frame.get_width()))
+
+                return bgr_image, depth_image
+            except Exception as e:
+                print(f"[CAMERA ERROR] Orbbec 读取失败: {e}")
+                return None, None
+        else:
+            # OpenCV 模式
+            if self.cap is not None and self.cap.isOpened():
+                ret, frame = self.cap.read()
+                if ret:
+                    # 如果画面被水平翻转了，这里可以 flip
+                    frame = cv2.flip(frame, 1)
+                    return frame, None
+            return None, None
+
+    def release(self):
+        if self.mode == "ORBBEC" and self.pipeline is not None:
+            self.pipeline.stop()
+        elif self.mode == "OPENCV" and self.cap is not None:
+            self.cap.release()
