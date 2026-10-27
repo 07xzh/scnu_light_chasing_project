@@ -45,9 +45,11 @@ Desktop.ini
 
 # demo videos - too large for GitHub
 *.mp4
+!videos/*.mp4
 
 # demo videos too large for GitHub
 *.mp4
+!videos/*.mp4
 
 push_to_github.bat
 *.bak
