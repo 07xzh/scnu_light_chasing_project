@@ -1,9 +1,10 @@
-# ASL 手语识别与翻译系统 · 零基础复现手册
+# ASL 手语识别与翻译系统 · 零基础复现教程
 
 > **深度相机**：Orbbec Gemini 336L
 > **环境**：Python 3.12 · Windows 10 / 11 · Anaconda
 > **源码仓库**：https://github.com/07xzh/scnu_light_chasing_project
 >
+> **项目演示视频下载**：https://github.com/07xzh/scnu_light_chasing_project/releases/download/v1.0/ASL.mp4
 >
 > **从一行命令都不会，到完整跑通。**
 
@@ -19,7 +20,7 @@
 >
 > 克隆命令：`git clone https://github.com/07xzh/scnu_light_chasing_project.git`
 >
-> 本手册所有命令中的项目路径，请替换成你克隆后的实际目录。
+> 本教程所有命令中的项目路径，请替换成你克隆后的实际目录。
 
 ### 你会得到什么
 
@@ -40,7 +41,7 @@
 把两三行命令一起粘进 CMD，会被合并成一条，报出像"指定不存在的设备"这种与原因完全无关的错误
 
 **关于深度相机型号**
-本手册记录的实测复现使用 **Orbbec Gemini 336L**，与Orbbec其他型号的相机都同属于 Orbbec RGB-D 生态，采集逻辑一致，差别集中在 SDK 版本与设备驱动上。若你手上是其他 Orbbec 型号，流程基本相同。
+本教程记录的实测复现使用 **Orbbec Gemini 336L**，与Orbbec其他型号的相机都同属于 Orbbec RGB-D 生态，采集逻辑一致，差别集中在 SDK 版本与设备驱动上。若你手上是其他 Orbbec 型号，流程基本相同。
 
 ---
 
@@ -109,7 +110,7 @@ ASL-Recognition/
 │   ├── hand_landmarker.task   << 手部检测模型（已提供）
 │   └── model5.keras           << 字母分类模型（已提供）
 ├── requirements.txt           << 依赖清单（13 个库）
-└── start.bat                  << 原始一键启动（本手册不用）
+└── start.bat                  
 ```
 
 **注意！：两个模型都已经在项目里了。**
@@ -123,7 +124,7 @@ ASL-Recognition/
 
 - 一台 Windows 10 / 11 电脑，内存 8 GB 以上（推荐 16 GB）
 - 一个普通 USB 摄像头，或笔记本自带摄像头（先用它跑通主流程）
-- Orbbec Gemini 336L 深度相机（可选，第六章再接入）
+- Orbbec Gemini 336L 深度相机（可选）
 - USB-C **数据线**（不是充电线，很多线只有供电针脚）
 - 磁盘空闲空间 10 GB 以上
 
@@ -139,7 +140,7 @@ ASL-Recognition/
 
 1. 关掉所有可能占用摄像头的软件：微信、QQ、腾讯会议、相机 App
 2. 确认项目目录里能看到 `backend`、`frontend`、`models`、`requirements.txt`
-3. 记住一句话：**本手册所有命令都在 Anaconda Prompt 里敲**
+3. 记住一句话：**本教程所有命令都在 Anaconda Prompt 里敲**
 
 ---
 
@@ -378,13 +379,13 @@ http://127.0.0.1:8765
 
 **值得注意的是：**
 **模型只认 24 个字母**
-`ABCDEFGHIKLMNOPQRSTUVWXY` —— 没有 J 和 Z。这两个字母需要"画轨迹"，走的是另一套动态手势逻辑（见第八章）。
+`ABCDEFGHIKLMNOPQRSTUVWXY` —— 没有 J 和 Z。这两个字母需要"画轨迹"，走的是另一套动态手势逻辑。
 
 ---
 
 ### 5.5 每次启动就这四行
 
-熟悉之后，日常只需要下面四行，不用再翻前面的章节：
+熟悉之后，日常只需要下面四行：
 
 ```cmd
 conda activate asl
@@ -687,11 +688,6 @@ set DEEPSEEK_BASE_URL=https://api.deepseek.com
 
 ---
 
----
 
-## 演示视频
 
-[▶ 在线观看完整演示](https://07xzh.github.io/scnu_light_chasing_project/videos.html)
 
-> 页面内含三段录屏：ASL 手语识别、双人切水果、积木拼搭。
-> 如果 `github.io` 打不开，可直接下载原片：[ASL.mp4](../videos/ASL.mp4)
