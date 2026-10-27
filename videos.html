@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>演示视频 · ASL 手语识别 & 体感游戏</title>
+<style>
+  :root { --blue:#0f4c75; --line:#d8e0e8; --grey:#52606d; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0 auto; padding: 32px 20px 64px; max-width: 900px; background: #f7f9fc;
+    font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+    color: #1f2933; line-height: 1.8;
+  }
+  h1 { font-size: 26px; color: var(--blue); margin: 0 0 6px; }
+  .sub { color: var(--grey); font-size: 14px; margin-bottom: 28px; }
+  .card {
+    background: #fff; border: 1px solid var(--line); border-radius: 10px;
+    padding: 18px 20px 22px; margin-bottom: 22px;
+    box-shadow: 0 1px 3px rgba(15,76,117,.06);
+  }
+  .card h2 { font-size: 18px; margin: 0 0 4px; color: var(--blue); }
+  .meta { color: var(--grey); font-size: 13px; margin-bottom: 12px; }
+  video { width: 100%; height: auto; border-radius: 6px; background: #000; display: block; }
+  .tip { font-size: 13px; color: var(--grey); margin-top: 10px; }
+  a { color: #1971c2; }
+  code { background:#eef2f6; padding:1px 5px; border-radius:3px; font-size:13px; }
+</style>
+</head>
+<body>
+
+<h1>演示视频</h1>
+<div class="sub">ASL 手语识别系统 · 深度相机体感游戏 —— 本项目实测录屏</div>
+
+<div class="card">
+  <h2>① ASL 手语识别与翻译系统</h2>
+  <div class="meta">45.3 MB · 基于深度相机的美式手语识别，含拼词纠错与网页实时展示</div>
+  <video controls preload="metadata" src="videos/ASL.mp4"></video>
+  <div class="tip">如果无法播放，<a href="videos/ASL.mp4" download>点此下载原片</a></div>
+</div>
+
+<div class="card">
+  <h2>② 双人切水果（体感游戏）</h2>
+  <div class="meta">52.7 MB · 手掌刀切割 + 深度距离感知</div>
+  <video controls preload="metadata" src="videos/FRUIT.mp4"></video>
+  <div class="tip">如果无法播放，<a href="videos/FRUIT.mp4" download>点此下载原片</a></div>
+</div>
+
+<div class="card">
+  <h2>③ 积木拼搭（体感游戏）</h2>
+  <div class="meta">8.1 MB · 握拳抓取 / 张手释放 + 深度锁手</div>
+  <video controls preload="metadata" src="videos/GESTURE.mp4"></video>
+  <div class="tip">如果无法播放，<a href="videos/GESTURE.mp4" download>点此下载原片</a></div>
+</div>
+
+<div class="tip" style="margin-top:28px">
+  本页由仓库内的 <code>videos/</code> 目录提供视频文件，通过 GitHub Pages 托管。
+</div>
+
+</body>
+</html>
