@@ -1,10 +1,10 @@
-# 深度相机体感游戏 · Windows 复现手册
+# 深度相机体感游戏 · Windows 复现教程
 
 > **深度相机**：Orbbec Gemini 336L
 > **环境**：Windows 10 / 11 · Python 3.12 · Anaconda
 > **源码仓库**：https://github.com/07xzh/scnu_light_chasing_project
 >
-> 项目演示视频：
+> 项目演示视频下载：
 >
 > 切水果：https://github.com/07xzh/scnu_light_chasing_project/releases/download/v1.0/FRUIT.mp4
 >
@@ -16,7 +16,7 @@
 
 ## 阅读指南
 
-本手册记录的是一次真实的 Windows 复现过程：在 Windows 10/11 + Python 3.12 + Orbbec Gemini 336L 上做切水果和搭积木两项体感游戏。
+本次复现教程实现了：在 Windows 10/11 + Python 3.12 + Orbbec Gemini 336L 上做切水果和搭积木两项体感游戏。
 
 
 **获取源码**
@@ -63,26 +63,35 @@ motion_sensing_game/
 
 ### 1.2 它在技术上做了什么
 
-```text
-Gemini 336L  RGB + Depth
-        |
-        v
-Orbbec SDK / pyorbbecsdk2        << 同时拿到彩色帧与 16 位深度帧
-        |
-        v
-OpenCV  格式转换 / 镜像 / 缩放
-        |
-        v
-MediaPipe  21 个手部关键点
-        |
-        v
-手掌刀 / 握拳张手   +   深度值（mm）
-        |
-        v
-Pygame  游戏逻辑与渲染
-```
+```mermaid
+flowchart TD
+    A["🎥 Gemini 336L<br/>RGB + Depth"]
+    B["Orbbec SDK / pyorbbecsdk2<br/>同时拿到彩色帧与 16 位深度帧"]
+    C["OpenCV<br/>格式转换 / 镜像 / 缩放"]
+    D["MediaPipe<br/>21 个手部关键点"]
+    E["手掌刀 / 握拳张手<br/>+ 深度值（mm）"]
+    F["Pygame<br/>游戏逻辑与渲染"]
 
----
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+
+    classDef cam fill:#e8f1f8,stroke:#1971c2,stroke-width:2px,color:#16202b
+    classDef sdk fill:#f3e8fa,stroke:#7048e8,stroke-width:2px,color:#16202b
+    classDef cv  fill:#eaf7ee,stroke:#2f9e44,stroke-width:2px,color:#16202b
+    classDef mp  fill:#fff8e6,stroke:#e8a33d,stroke-width:2px,color:#16202b
+    classDef ges fill:#fdf0e6,stroke:#e8590c,stroke-width:2px,color:#16202b
+    classDef pyg fill:#eef2f6,stroke:#52606d,stroke-width:2px,color:#16202b
+
+    class A cam
+    class B sdk
+    class C cv
+    class D mp
+    class E ges
+    class F pyg
+```
 
 ### 1.3 RGB 与 Depth 各做什么
 
@@ -109,10 +118,10 @@ Pygame  游戏逻辑与渲染
 ### 2.2 软件
 
 - Anaconda（提供 conda 与 Anaconda Prompt）
-- Python 3.12 环境（本手册用名为 `asl` 的 conda 环境，可直接复用）
+- Python 3.12 环境（本教程用名为 `asl` 的 conda 环境，可直接复用）
   
 - **强烈建议：源码放在纯英文路径下**
-  实测确认：**MediaPipe 的模型加载不支持含中文的路径**，会报 `Unable to open file at E:\Game\3.项目程序源码\...`。虽然本手册的补丁会做绕过处理，但把项目放在 `D:\Game\fruit` 这类纯英文路径下最省事。
+  实测确认：**MediaPipe 的模型加载不支持含中文的路径**，会报 `Unable to open file at E:\Game\3.项目程序源码\...`。虽然本教程的补丁会做绕过处理，但把项目放在 `D:\Game\fruit` 这类纯英文路径下最省事。
 
 ### 2.3 依赖清单
 
@@ -120,7 +129,7 @@ Pygame  游戏逻辑与渲染
 | ------------- | -------------- | --------------------------------- |
 | pygame        | 游戏窗口、绘图、事件     | 命令行启动需 ≥2.6                       |
 | opencv-python | 图像转换、解码、镜像     | Windows 版**没有** `CAP_OBSENSOR` 后端 |
-| mediapipe     | 21 个关键点        | 1.1.1 已移除 `mp.solutions`（见第七章）    |
+| mediapipe     | 21 个关键点        | 1.1.1 已移除 `mp.solutions`    |
 | numpy         | 深度、坐标、向量运算     | 随 opencv 一起装                      |
 | cvzone        | 手部检测封装（切水果用）   | 缺了会退回 mediapipe 旧接口               |
 | pyorbbecsdk2  | 读取 RGB + Depth | 导入名是 `pyorbbecsdk`                |
@@ -165,7 +174,7 @@ python -c "from pyorbbecsdk import Context; print('设备数量:', Context().que
 
 
 **！！设备数量必须是 1**
-如果打印 0，先别往下走：换后置 USB 3.0 口 → 换原装数据线 → 关掉 Orbbec Viewer 等占用相机的程序。设备为 0 时直接启动程序，SDK 原生层会崩溃（进程静默退出，看不到任何报错），这是本手册最常见的一类「莫名其妙的失败」。
+如果打印 0，先别往下走：换后置 USB 3.0 口 → 换原装数据线 → 关掉 Orbbec Viewer 等占用相机的程序。设备为 0 时直接启动程序，SDK 原生层会崩溃（进程静默退出，看不到任何报错），这是本教程最常见的一类「莫名其妙的失败」。
 
 ---
 
@@ -196,7 +205,7 @@ python main.py --input webcam --camera-index 0
 
 ### 4.3 第三步：接深度相机
 
-本手册提供一个一键补丁（会自动生成 RGB-D 后端并改好三个文件）：
+本教程提供一个一键补丁（会自动生成 RGB-D 后端并改好三个文件）：
 
 ```cmd
 copy /Y apply_rgbd_patch.py .
@@ -402,7 +411,7 @@ return float(np.median(patch))
 
 ---
 
-## 七、故障手册
+## 七、常见故障
 
 ### 7.1 环境与启动
 
@@ -442,9 +451,7 @@ return float(np.median(patch))
 
 ---
 
-## 八、验收清单与演示脚本
-
-### 8.1 验收清单（Windows 版）
+## 八、验收清单
 
 | #   | 检查项                | 验收标准                                          |
 | --- | ------------------ | --------------------------------------------- |
@@ -457,23 +464,15 @@ return float(np.median(patch))
 | 7   | 积木拼搭手部识别           | 日志 `MediaPipe(Tasks API) hand tracking ready` |
 | 8   | 积木拼搭深度             | `palm=` 非 0 且随手前后变化                           |
 
-### 8.2 演示顺序
-
-1. 先讲项目内容：基于ORBBEC 336L深度相机的体感游戏
-2. 展示硬件：Gemini 336L + Windows 主机
-3. 打开双人切水果，说明 RGB 做手部识别、Depth 做距离感知
-4. 看终端 `[Depth]` 输出，证明这不是普通摄像头
-5. 切一个水果、切一个炸弹，说明生命值机制
-  6.积木拼搭，演示握拳抓取 / 张手释放
+---
 
 ---
 
-## 速记：一页纸的要点
+## 演示视频
 
-| 记住   | 内容                                              |
-| ---- | ----------------------------------------------- |
-| 一条前提 | `get_count()` 必须返回 1                            |
-| 两个补丁 | `apply_rgbd_patch.py` / `apply_blocks_patch.py` |
-| 三个判据 | Orbbec RGB-D 已启动 / 出现手部骨架 / palm 非 0            |
-| 四个坑  | solutions 缺失 / 中文路径 / 硬件 D2C / 设备 0 崩溃          |
-| 五个参数 | 1-5 选关，空格暂停，R 重来，N 下一关，Esc 退出                   |
+| 内容 | 大小 | 链接 |
+|---|---|---|
+| 双人切水果 | 52.7 MB | [▶ 点击播放](../videos/FRUIT.mp4) |
+| 积木拼搭 | 8.1 MB | [▶ 点击播放](../videos/GESTURE.mp4) |
+
+<video src="../videos/FRUIT.mp4" controls width="720"></video>
