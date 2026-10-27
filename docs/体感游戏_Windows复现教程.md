@@ -470,9 +470,11 @@ return float(np.median(patch))
 
 ## 演示视频
 
-| 内容 | 大小 | 链接 |
-|---|---|---|
-| 双人切水果 | 52.7 MB | [▶ 点击播放](../videos/FRUIT.mp4) |
-| 积木拼搭 | 8.1 MB | [▶ 点击播放](../videos/GESTURE.mp4) |
+[▶ 在线观看演示（双人切水果 / 积木拼搭）](https://07xzh.github.io/scnu_light_chasing_project/videos.html)
 
-<video src="../videos/FRUIT.mp4" controls width="720"></video>
+| 内容 | 大小 | 直接下载 |
+|---|---|---|
+| 双人切水果 | 52.7 MB | [FRUIT.mp4](../videos/FRUIT.mp4) |
+| 积木拼搭 | 8.1 MB | [GESTURE.mp4](../videos/GESTURE.mp4) |
+
+> 如果 `github.io` 打不开，用上面的下载链接。

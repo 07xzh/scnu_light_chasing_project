@@ -4,7 +4,6 @@
 > **环境**：Python 3.12 · Windows 10 / 11 · Anaconda
 > **源码仓库**：https://github.com/07xzh/scnu_light_chasing_project
 >
-> **项目演示视频下载**：https://github.com/07xzh/scnu_light_chasing_project/releases/download/v1.0/ASL.mp4
 >
 > **从一行命令都不会，到完整跑通。**
 
@@ -692,8 +691,7 @@ set DEEPSEEK_BASE_URL=https://api.deepseek.com
 
 ## 演示视频
 
-[▶ 点击播放完整演示（45.3 MB）](../videos/ASL.mp4)
+[▶ 在线观看完整演示](https://07xzh.github.io/scnu_light_chasing_project/videos.html)
 
-<video src="../videos/ASL.mp4" controls width="720"></video>
-
-
+> 页面内含三段录屏：ASL 手语识别、双人切水果、积木拼搭。
+> 如果 `github.io` 打不开，可直接下载原片：[ASL.mp4](../videos/ASL.mp4)
